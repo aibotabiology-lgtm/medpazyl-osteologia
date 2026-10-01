@@ -23,7 +23,11 @@
   "id": "t03",
   "title": "Иық белдеуі сүйектері",
   "la": "Ossa cinguli membri superioris",
-  "ready": false
+  "ready": true,
+  "cards": 30,
+  "quiz": 30,
+  "figs": 2,
+  "sections": 7
  },
  {
   "id": "t04",
