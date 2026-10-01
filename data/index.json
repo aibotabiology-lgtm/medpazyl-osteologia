@@ -1,0 +1,96 @@
+[
+ {
+  "id": "t01",
+  "title": "Омыртқа бағанасының құрылысы",
+  "la": "Columna vertebralis",
+  "ready": true,
+  "cards": 134,
+  "quiz": 30,
+  "figs": 10,
+  "sections": 17
+ },
+ {
+  "id": "t02",
+  "title": "Сегізкөз, құймышақ омыртқалары. Төс пен қабырғалар",
+  "la": "Os sacrum, os coccygis, sternum, costae",
+  "ready": true,
+  "cards": 56,
+  "quiz": 29,
+  "figs": 4,
+  "sections": 10
+ },
+ {
+  "id": "t03",
+  "title": "Иық белдеуі сүйектері",
+  "la": "Ossa cinguli membri superioris",
+  "ready": false
+ },
+ {
+  "id": "t04",
+  "title": "Қолдың еркін қозғалатын сүйектері",
+  "la": "Ossa membri superioris liberi",
+  "ready": false
+ },
+ {
+  "id": "t05",
+  "title": "Жамбас құрылысы",
+  "la": "Pelvis",
+  "ready": false
+ },
+ {
+  "id": "t06",
+  "title": "Аяқтың еркін қозғалатын сүйектері",
+  "la": "Ossa membri inferioris liberi",
+  "ready": true,
+  "cards": 103,
+  "quiz": 30,
+  "figs": 5,
+  "sections": 11
+ },
+ {
+  "id": "t07",
+  "title": "Бассүйек: кіріспе",
+  "la": "Cranium",
+  "ready": false
+ },
+ {
+  "id": "t08",
+  "title": "Сына, торлы сүйек құрылысы",
+  "la": "Os sphenoidale, os ethmoidale",
+  "ready": false
+ },
+ {
+  "id": "t09",
+  "title": "Самай сүйегі, самай сүйегінің өзектері",
+  "la": "Os temporale; canales ossis temporalis",
+  "ready": true,
+  "cards": 60,
+  "quiz": 30,
+  "figs": 4,
+  "sections": 7
+ },
+ {
+  "id": "t10",
+  "title": "Жоғарғы және төменгі жақ сүйегі құрылысы",
+  "la": "Maxilla, mandibula",
+  "ready": false
+ },
+ {
+  "id": "t11",
+  "title": "Бет сүйектері құрылысы",
+  "la": "Ossa faciei",
+  "ready": false
+ },
+ {
+  "id": "t12",
+  "title": "Бассүйек топографиясы",
+  "la": "Topographia cranii",
+  "ready": false
+ },
+ {
+  "id": "t13",
+  "title": "Бассүйек қойнаулары",
+  "la": "Sinus paranasales",
+  "ready": false
+ }
+]
