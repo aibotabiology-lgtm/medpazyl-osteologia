@@ -38,8 +38,12 @@
  {
   "id": "t05",
   "title": "Жамбас құрылысы",
-  "la": "Pelvis",
-  "ready": false
+  "la": "Pelvis; os coxae",
+  "ready": true,
+  "cards": 73,
+  "quiz": 30,
+  "figs": 4,
+  "sections": 10
  },
  {
   "id": "t06",
