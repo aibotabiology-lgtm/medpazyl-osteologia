@@ -33,7 +33,11 @@
   "id": "t04",
   "title": "Қолдың еркін қозғалатын сүйектері",
   "la": "Ossa membri superioris liberi",
-  "ready": false
+  "ready": true,
+  "cards": 160,
+  "quiz": 50,
+  "figs": 11,
+  "sections": 15
  },
  {
   "id": "t05",
@@ -58,30 +62,42 @@
  {
   "id": "t07",
   "title": "Бассүйек: кіріспе",
-  "la": "Cranium",
-  "ready": false
+  "la": "Cranium; os frontale, os parietale, os occipitale",
+  "ready": true,
+  "cards": 143,
+  "quiz": 50,
+  "figs": 14,
+  "sections": 14
  },
  {
   "id": "t08",
   "title": "Сына, торлы сүйек құрылысы",
   "la": "Os sphenoidale, os ethmoidale",
-  "ready": false
+  "ready": true,
+  "cards": 119,
+  "quiz": 50,
+  "figs": 13,
+  "sections": 19
  },
  {
   "id": "t09",
   "title": "Самай сүйегі, самай сүйегінің өзектері",
   "la": "Os temporale; canales ossis temporalis",
   "ready": true,
-  "cards": 60,
+  "cards": 102,
   "quiz": 30,
-  "figs": 4,
+  "figs": 7,
   "sections": 7
  },
  {
   "id": "t10",
   "title": "Жоғарғы және төменгі жақ сүйегі құрылысы",
   "la": "Maxilla, mandibula",
-  "ready": false
+  "ready": true,
+  "cards": 122,
+  "quiz": 50,
+  "figs": 9,
+  "sections": 15
  },
  {
   "id": "t11",
