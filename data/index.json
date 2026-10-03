@@ -14,18 +14,18 @@
   "title": "Сегізкөз, құймышақ омыртқалары. Төс пен қабырғалар",
   "la": "Os sacrum, os coccygis, sternum, costae",
   "ready": true,
-  "cards": 113,
-  "quiz": 29,
-  "figs": 10,
-  "sections": 14
+  "cards": 127,
+  "quiz": 48,
+  "figs": 11,
+  "sections": 15
  },
  {
   "id": "t03",
   "title": "Иық белдеуі сүйектері",
   "la": "Ossa cinguli membri superioris",
   "ready": true,
-  "cards": 74,
-  "quiz": 30,
+  "cards": 78,
+  "quiz": 48,
   "figs": 7,
   "sections": 10
  },
@@ -44,8 +44,8 @@
   "title": "Жамбас құрылысы",
   "la": "Pelvis; os coxae",
   "ready": true,
-  "cards": 169,
-  "quiz": 30,
+  "cards": 177,
+  "quiz": 48,
   "figs": 15,
   "sections": 10
  },
@@ -54,10 +54,10 @@
   "title": "Аяқтың еркін қозғалатын сүйектері",
   "la": "Ossa membri inferioris liberi",
   "ready": true,
-  "cards": 103,
-  "quiz": 30,
-  "figs": 5,
-  "sections": 11
+  "cards": 156,
+  "quiz": 50,
+  "figs": 13,
+  "sections": 15
  },
  {
   "id": "t07",
@@ -113,12 +113,20 @@
   "id": "t12",
   "title": "Бассүйек топографиясы",
   "la": "Topographia cranii",
-  "ready": false
+  "ready": true,
+  "cards": 235,
+  "quiz": 50,
+  "figs": 12,
+  "sections": 20
  },
  {
   "id": "t13",
   "title": "Бассүйек қойнаулары",
-  "la": "Sinus paranasales",
-  "ready": false
+  "la": "Cavitas nasi, orbita, fossae cranii",
+  "ready": true,
+  "cards": 261,
+  "quiz": 50,
+  "figs": 22,
+  "sections": 22
  }
 ]
