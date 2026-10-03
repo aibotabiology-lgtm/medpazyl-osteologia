@@ -4,30 +4,30 @@
   "title": "Омыртқа бағанасының құрылысы",
   "la": "Columna vertebralis",
   "ready": true,
-  "cards": 134,
-  "quiz": 30,
-  "figs": 10,
-  "sections": 17
+  "cards": 207,
+  "quiz": 49,
+  "figs": 19,
+  "sections": 19
  },
  {
   "id": "t02",
   "title": "Сегізкөз, құймышақ омыртқалары. Төс пен қабырғалар",
   "la": "Os sacrum, os coccygis, sternum, costae",
   "ready": true,
-  "cards": 56,
+  "cards": 113,
   "quiz": 29,
-  "figs": 4,
-  "sections": 10
+  "figs": 10,
+  "sections": 14
  },
  {
   "id": "t03",
   "title": "Иық белдеуі сүйектері",
   "la": "Ossa cinguli membri superioris",
   "ready": true,
-  "cards": 30,
+  "cards": 74,
   "quiz": 30,
-  "figs": 2,
-  "sections": 7
+  "figs": 7,
+  "sections": 10
  },
  {
   "id": "t04",
@@ -44,9 +44,9 @@
   "title": "Жамбас құрылысы",
   "la": "Pelvis; os coxae",
   "ready": true,
-  "cards": 73,
+  "cards": 169,
   "quiz": 30,
-  "figs": 4,
+  "figs": 15,
   "sections": 10
  },
  {
@@ -84,10 +84,10 @@
   "title": "Самай сүйегі, самай сүйегінің өзектері",
   "la": "Os temporale; canales ossis temporalis",
   "ready": true,
-  "cards": 102,
-  "quiz": 30,
-  "figs": 7,
-  "sections": 7
+  "cards": 117,
+  "quiz": 50,
+  "figs": 9,
+  "sections": 13
  },
  {
   "id": "t10",
@@ -103,7 +103,11 @@
   "id": "t11",
   "title": "Бет сүйектері құрылысы",
   "la": "Ossa faciei",
-  "ready": false
+  "ready": true,
+  "cards": 118,
+  "quiz": 51,
+  "figs": 16,
+  "sections": 15
  },
  {
   "id": "t12",
