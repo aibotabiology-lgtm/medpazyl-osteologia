@@ -281,7 +281,7 @@ function md(src){const out=[];let list=null;const flush=()=>{if(list){out.push('
   return out.join('')}
 
 /* Latin (medical) → Russian-phonetic text with stress marks, for speechSynthesis (ru-RU). */
-const LAT_LONG_SUFFIX = ['alis','ale','ales','alia','aris','are','ares','atus','ata','atum','osus','osa','osum','ivus','iva','ivum','ura','urae','oris','ores','amen','omen','ensis','ense','atinus','atina','atinum','iora','iores','ioris'];
+const LAT_LONG_SUFFIX = ['alis','ale','ales','alia','aris','are','ares','atus','ata','atum','osus','osa','osum','ivus','iva','ivum','ura','urae','oris','ores','amen','omen','ensis','ense','atinus','atina','atinum','iora','iores','ioris','osis','oses','ago','igo','ugo'];
 function latWordToRu(w){
   w=w.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z]/g,'');
   if(!w) return '';
