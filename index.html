@@ -218,6 +218,16 @@ table.tt{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
 .fb.bad{background:var(--bad-soft);color:var(--bad)}
 .score{font-variant-numeric:tabular-nums;font-size:14.5px;font-weight:600;color:var(--ink-2)}
 
+.say{display:inline-flex;align-items:center;justify-content:center;flex:none;width:40px;height:40px;margin-left:8px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);color:var(--blue);vertical-align:middle;cursor:pointer;padding:0}
+.say:hover{border-color:var(--blue);background:var(--blue-soft)}
+.say.speaking{background:var(--orange);border-color:var(--orange);color:#fff}
+.say.sm{width:34px;height:34px;margin-left:6px}
+.say.sm svg{width:17px;height:17px}
+.latsay{display:inline-flex;align-items:center;flex-wrap:wrap;gap:0}
+.prose em.sayable{cursor:pointer;text-decoration:underline dotted;text-decoration-thickness:1.5px;text-underline-offset:3px}
+.prose em.sayable:hover{color:var(--orange-ink)}
+.prose em.sayable.speaking{color:var(--orange)}
+
 /* lightbox */
 .lb{position:fixed;inset:0;z-index:50;background:rgba(10,10,10,.86);display:grid;place-items:center;padding:16px;cursor:zoom-out}
 .lb img{max-width:100%;max-height:100%;background:#fff;border-radius:10px}
@@ -269,6 +279,108 @@ function md(src){const out=[];let list=null;const flush=()=>{if(list){out.push('
     else if(l.startsWith('> '))out.push('<blockquote>'+inline(l.slice(2))+'</blockquote>');
     else out.push('<p>'+inline(l)+'</p>')}flush()}
   return out.join('')}
+
+/* Latin (medical) → Russian-phonetic text with stress marks, for speechSynthesis (ru-RU). */
+const LAT_LONG_SUFFIX = ['alis','ale','ales','alia','aris','are','ares','atus','ata','atum','osus','osa','osum','ivus','iva','ivum','ura','urae','oris','ores','amen','omen','ensis','ense','atinus','atina','atinum','iora','iores','ioris'];
+function latWordToRu(w){
+  w=w.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z]/g,'');
+  if(!w) return '';
+  const V='aeiouy', isV=c=>!!c&&c.length===1&&V.includes(c);
+  const U=[]; // units: {r, v:boolean, diph, lat}
+  let i=0;
+  while(i<w.length){
+    const c=w[i], n=w[i+1]||'', n2=w[i+2]||'', prev=w[i-1]||'';
+    const atStart=i===0, afterV=i>0&&isV(prev);
+    if(c==='a'&&n==='e'||c==='o'&&n==='e'){U.push({r:'э',v:1,d:1,lat:c+n});i+=2;continue}
+    if(c==='a'&&n==='u'){U.push({r:'ау',v:1,d:1,lat:'au'});i+=2;continue}
+    if(c==='e'&&n==='u'&&n2&&!isV(n2)&&!/^(s|m)$/.test(w.slice(i+2))){U.push({r:'эу',v:1,d:1,lat:'eu'});i+=2;continue}
+    if(c==='q'&&n==='u'){U.push({r:'кв',v:0,lat:'qu'});i+=2;continue}
+    if(c==='n'&&n==='g'&&n2==='u'&&isV(w[i+3]||'')){U.push({r:'н',v:0,lat:'n'},{r:'гв',v:0,lat:'gu'});i+=3;continue}
+    if(c==='c'&&n==='h'){U.push({r:'х',v:0,lat:'ch'});i+=2;continue}
+    if(c==='p'&&n==='h'){U.push({r:'ф',v:0,lat:'ph'});i+=2;continue}
+    if(c==='t'&&n==='h'){U.push({r:'т',v:0,lat:'th'});i+=2;continue}
+    if(c==='r'&&n==='h'){U.push({r:'р',v:0,lat:'rh'});i+=2;continue}
+    if(c==='s'&&n==='c'&&n2==='h'){U.push({r:'с',v:0,lat:'s'},{r:'х',v:0,lat:'ch'});i+=3;continue}
+    if(isV(c)){
+      let r={a:'а',e:(atStart||afterV)?'э':'е',i:'и',o:'о',u:'у',y:'и'}[c];
+      U.push({r,v:1,d:0,lat:c});i++;continue}
+    let r;
+    switch(c){
+      case 'c': r=/[eiy]/.test(n)||(n==='a'&&n2==='e')||(n==='o'&&n2==='e')?'ц':'к';break;
+      case 't': r=(n==='i'&&isV(n2)&&!/[stx]/.test(prev))?'ц':'т';break;
+      case 's': r=(afterV&&isV(n))?'з':'с';break;
+      case 'x': r='кс';break;
+      case 'z': r='з';break;
+      case 'h': r='г';break;
+      case 'j': r='й';break;
+      case 'w': case 'v': r='в';break;
+      default: r={b:'б',d:'д',f:'ф',g:'г',k:'к',l:'л',m:'м',n:'н',p:'п',r:'р'}[c]||'';
+    }
+    U.push({r,v:0,lat:c});i++;
+  }
+  // soft l: before a/u -> я/ю ; before consonant or end -> ль
+  for(let k=0;k<U.length;k++){
+    if(U[k].lat!=='l')continue;
+    const nx=U[k+1];
+    if(!nx){U[k].r='ль';continue}
+    if(nx.v&&!nx.d&&nx.lat==='a'){nx.r='я'}
+    else if(nx.v&&!nx.d&&nx.lat==='u'){nx.r='ю'}
+    else if(!nx.v&&nx.lat!=='l'){U[k].r='ль'}
+  }
+  // word-initial j + vowel -> я/ю/е
+  if(U[0]&&U[0].lat==='j'&&U[1]&&U[1].v&&!U[1].d){const m={a:'я',u:'ю',e:'е',o:'йо',i:'йи'}[U[1].lat];U[0].r='';U[1].r=m}
+  // stress
+  const vi=U.map((u,k)=>u.v?k:-1).filter(k=>k>=0);
+  let s=-1;const n=vi.length;
+  if(n===2) s=vi[0];
+  else if(n>=3){
+    const p=vi[n-2], q=vi[n-1];
+    let long=!!U[p].d;
+    const between=U.slice(p+1,q);
+    const cons=between.reduce((a,u)=>a+(u.lat==='x'||u.lat==='z'?2:1),0);
+    const mcl=between.length===2&&/^(b|p|d|t|g|c|ch|ph|th)$/.test(between[0].lat)&&/^(l|r)$/.test(between[1].lat);
+    if(cons>=2&&!mcl) long=true;
+    if(between.length===0&&!U[p].d) long=false;
+    if(LAT_LONG_SUFFIX.some(x=>w.endsWith(x))&&between.length>0) long=true;
+    s=long?p:vi[n-3];
+  }
+  return U.map((u,k)=>u.r+(k===s?'́':'')).join('');
+}
+function latinToRu(text){
+  return String(text||'')
+    .replace(/\([^)]*\)|\[[^\]]*\]/g,' ')
+    .split(/([\s;,.:/–—-]+)/)
+    .map(t=>/^[A-Za-z\u00C0-\u017F]+$/.test(t)&&!/^(I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII)$/.test(t)?latWordToRu(t):(/[\s;,.:/–—-]/.test(t)?' ':' '))
+    .join('').replace(/\s+/g,' ').trim();
+}
+
+/* ---------- speech ---------- */
+const TTS={ok:typeof window!=='undefined'&&'speechSynthesis' in window&&'SpeechSynthesisUtterance' in window,voice:null,fb:null,cur:null};
+function ttsPickVoices(){if(!TTS.ok)return;const vs=speechSynthesis.getVoices();if(!vs.length)return;
+  const ru=vs.filter(v=>/^ru/i.test(v.lang));
+  TTS.voice=ru.find(v=>/google/i.test(v.name))||ru.find(v=>/milena|irina|svetlana|dariya|yuri|pavel/i.test(v.name))||ru[0]||null;
+  const it=vs.filter(v=>/^it/i.test(v.lang));TTS.fb=it.find(v=>/google/i.test(v.name))||it[0]||null}
+if(TTS.ok){ttsPickVoices();speechSynthesis.addEventListener?.('voiceschanged',ttsPickVoices)}
+function say(text,btn){
+  if(!TTS.ok)return;
+  try{speechSynthesis.cancel()}catch(e){}
+  if(TTS.cur){TTS.cur.classList.remove('speaking');if(TTS.cur===btn){TTS.cur=null;return}}
+  ttsPickVoices();
+  let u;
+  if(TTS.voice||!TTS.fb){u=new SpeechSynthesisUtterance(latinToRu(text));u.lang='ru-RU';if(TTS.voice)u.voice=TTS.voice}
+  else{u=new SpeechSynthesisUtterance(String(text).replace(/\([^)]*\)/g,''));u.lang='it-IT';u.voice=TTS.fb}
+  u.rate=0.82;u.pitch=1;
+  if(btn){btn.classList.add('speaking');TTS.cur=btn;const done=()=>{btn.classList.remove('speaking');if(TTS.cur===btn)TTS.cur=null};u.onend=done;u.onerror=done}
+  speechSynthesis.speak(u)}
+const SPK='<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 9.5v5h3.5L12 19V5L7.5 9.5H4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+function sayBtn(text,cls=''){
+  if(!TTS.ok||!text)return null;
+  const b=document.createElement('button');b.type='button';b.className='say '+cls;b.innerHTML=SPK;
+  b.setAttribute('aria-label','Латынша тыңдау: '+text);b.title='Латынша тыңдау';
+  b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();say(text,b)});
+  b.addEventListener('keydown',e=>e.stopPropagation());
+  return b}
+function latWithSay(text,cls='lat'){const w=h('span',{class:'latsay'},h('span',{class:cls},text));const b=sayBtn(text);if(b)w.append(b);return w}
 
 /* ---------- data ---------- */
 let INDEX=null;const CACHE={};
@@ -361,7 +473,7 @@ async function renderModule(id,tab){
   if(!meta||!meta.ready){main.innerHTML='';main.append(h('div',{class:'empty'},'Бұл модуль әзірге дайын емес. ',h('a',{href:'#home'},'Басты бетке оралу')));return}
   const m=await getMod(id);const no=idx.indexOf(meta)+1;
   main.innerHTML='';
-  main.append(h('div',{class:'mhead'},h('div',{class:'eyebrow'},no+'-модуль'),h('h1',{},m.title),h('div',{class:'lat'},m.la)));
+  main.append(h('div',{class:'mhead'},h('div',{class:'eyebrow'},no+'-модуль'),h('h1',{},m.title),latWithSay(m.la)));
   const tabs=h('div',{class:'tabs',role:'tablist'});
   const panel=h('section',{class:'panel'});
   TABS.forEach(([k,label],i)=>tabs.append(h('button',{class:'tab',role:'tab','aria-selected':String(k===tab),onclick:()=>{location.hash=id+'_'+k}},h('i',{},String(i+1)),label)));
@@ -380,8 +492,10 @@ function renderNotes(panel,m){
   const figs=Object.fromEntries(m.figures.map(f=>[f.id,f]));
   m.conspect.forEach((c,i)=>{
     const sec=h('article',{class:'sec',id:'s'+i},h('h2',{},c.h),h('div',{class:'prose',html:md(c.body)}));
+    if(TTS.ok)sec.querySelectorAll('.prose em').forEach(em=>{const t=em.textContent.trim();if(/^[A-Za-z][A-Za-z .,;'()\-]{1,80}$/.test(t)&&/[a-z]{3}/i.test(t)){em.classList.add('sayable');em.title='Тыңдау';em.tabIndex=0;em.setAttribute('role','button');
+      const go=e=>{e.preventDefault();say(t,em)};em.addEventListener('click',go);em.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')go(e)})}});
     for(const fid of c.figs||[]){const f=figs[fid];if(!f)continue;
-      const tb=h('tbody');f.labels.forEach(l=>tb.append(h('tr',{},h('td',{},l.n??''),h('td',{class:'lat'},l.la),h('td',{},l.kz),h('td',{class:'muted'},l.ru))));
+      const tb=h('tbody');f.labels.forEach(l=>tb.append(h('tr',{},h('td',{},l.n??''),h('td',{},h('span',{class:'latsay'},h('span',{class:'lat'},l.la),sayBtn(l.la,'sm'))),h('td',{},l.kz),h('td',{class:'muted'},l.ru))));
       sec.append(h('figure',{class:'figure'},
         h('div',{class:'plate',onclick:()=>lightbox(f.src)},h('img',{src:f.src,alt:f.caption,loading:'lazy',width:f.w,height:f.h})),
         h('figcaption',{class:'figcap'},f.caption),
@@ -412,7 +526,7 @@ function renderCards(panel,all,key){
     if(c.type==='bone')front=h('div',{class:'imgbox'},h('img',{class:'single',src:c.img,alt:'Сүйек суреті'}));
     else front=h('div',{class:'imgbox'},stage(c.fig,{hot:[c.li],maxH:.5}));
     const back=h('div',{class:'face back'},
-      h('div',{class:'la lat'},c.la),h('div',{class:'kz'},c.kz),h('div',{class:'ru'},'рус. '+c.ru),
+      h('div',{class:'latsay'},h('span',{class:'la lat'},c.la),sayBtn(c.la)),h('div',{class:'kz'},c.kz),h('div',{class:'ru'},'рус. '+c.ru),
       c.kind?h('div',{class:'kv'},h('b',{},'Түрі'),h('span',{},c.kind)):null,
       c.text?h('div',{class:'kv'},h('b',{},c.type==='bone'?'Қызметі':'Маңызы'),h('span',{},c.text.replace(/^Қызметі:\s*/,''))):null,
       c.facts.length?h('div',{class:'kv'},h('b',{},'Есте сақта'),h('ul',{},c.facts.map(f=>h('li',{},f)))):null);
@@ -485,7 +599,7 @@ function renderFind(panel,m){
       opts.forEach(i=>go.append(h('button',{class:'gopt',onclick:e=>{
         const ok=i===t;const b=e.currentTarget;
         if(ok){if(first)score++;b.classList.add('correct');go.querySelectorAll('button').forEach(x=>x.disabled=true);
-          fb.className='fb ok';fb.innerHTML=`<b>Дұрыс:</b> <span class="lat">${esc(L.la)}</span> — ${esc(L.kz)}${L.note?'<br>'+esc(L.note):''}`;side.append(nextBtn())}
+          fb.className='fb ok';fb.innerHTML=`<b>Дұрыс:</b> <span class="lat">${esc(L.la)}</span> — ${esc(L.kz)}${L.note?'<br>'+esc(L.note):''}`;{const sb=sayBtn(L.la,'sm');if(sb)fb.querySelector('.lat').after(sb)}side.append(nextBtn())}
         else{first=false;b.classList.add('wrong');b.disabled=true;fb.className='fb bad';fb.innerHTML=`Жоқ, бұл — <b>${esc(fig.labels[i].kz)}</b>. Тағы байқап көріңіз.`}
         sc.textContent=`${pos+1} / ${order.length} · ұпай ${score}`}},h('span',{class:'lat'},fig.labels[i].la),h('small',{},fig.labels[i].kz))));
       side.append(h('div',{class:'prompt'},h('div',{class:'q'},'Белгіленген (?) бөлік қалай аталады?')),go,fb,sc)}
@@ -498,7 +612,7 @@ function renderFind(panel,m){
         else{first=false;mk[i]='bad';redraw(false);fb.className='fb bad';fb.innerHTML=`Бұл — <span class="lat">${esc(fig.labels[i].la)}</span> (${esc(fig.labels[i].kz)}). Тағы іздеңіз.`}
         sc.textContent=`${pos+1} / ${order.length} · ұпай ${score}`}
       redraw(false);
-      side.append(h('div',{class:'prompt'},h('div',{class:'q'},'Суреттен көрсетіңіз:'),h('div',{class:'q',style:'margin-top:6px'},h('span',{class:'lat'},L.la)),h('div',{class:'muted'},L.kz)),fb,sc)}
+      side.append(h('div',{class:'prompt'},h('div',{class:'q'},'Суреттен көрсетіңіз:'),h('div',{class:'q',style:'margin-top:6px'},latWithSay(L.la)),h('div',{class:'muted'},L.kz)),fb,sc)}
     game.append(side)}
   if(!figs.length){panel.append(h('div',{class:'empty'},'Бұл модульде сурет жоқ.'));return}
   start()}
