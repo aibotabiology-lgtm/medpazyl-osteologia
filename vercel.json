@@ -1,1 +1,6 @@
-{ "cleanUrls": true, "headers": [ { "source": "/data/(.*)", "headers": [ { "key": "Cache-Control", "value": "no-cache" } ] } ] }
+{ "cleanUrls": true, "headers": [
+  { "source": "/data/(.*)", "headers": [ { "key": "Cache-Control", "value": "no-cache" } ] },
+  { "source": "/", "headers": [ { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" } ] },
+  { "source": "/index", "headers": [ { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" } ] },
+  { "source": "/index.html", "headers": [ { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" } ] }
+] }
